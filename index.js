@@ -9,10 +9,12 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({
+const corsOptions = {
     credentials: true,
-    origin: "*"
-}))
+    origin: ["http://localhost:5173", "https://aws-streaming-service.vercel.app"]
+};
+
+app.use(cors(corsOptions));
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
@@ -83,7 +85,7 @@ app.get("/download/:filename", async (req, res) => {
 app.delete("/delete/:filename", async (req, res) => {
     try {
         const filename = req.params.filename
-        await s3.deleteObject({ Bucket: BUCKET, Key: filename }).promise();
+        await s3.deleteObject({ Bucket: BUCKET, Key: filename }).promise()
         res.send("File Deleted Successfully")
     } catch (error) {
         res.send(`error: ${error.message}`)
